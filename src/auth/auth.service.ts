@@ -1,5 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { ConfigService } from '@nestjs/config';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt'
 import { Tokens } from './types';
@@ -7,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService, private jwtService: JwtService) { }
+    constructor(private prisma: PrismaService, private jwtService: JwtService, private config: ConfigService,) { }
 
     async signupLocal(dto: AuthDto): Promise<Tokens> {
         const hash = await this.hashData(dto.password);
@@ -16,6 +18,13 @@ export class AuthService {
                 email: dto.email,
                 hash,
             },
+        }).catch((error) => {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    throw new ForbiddenException('Credentials incorrect');
+                }
+            }
+            throw error;
         });
 
         const tokens = await this.getTokens(newUser.id, newUser.email);

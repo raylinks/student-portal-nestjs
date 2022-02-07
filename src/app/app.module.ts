@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { StudentController } from '../student/student.controller';
-import { TeacherController } from '../teacher/teacher.controller';
-import { StudentTeacherController } from '../teacher/student.controller';
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from 'src/auth/auth.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AtGuard } from 'src/common/guards';
@@ -10,8 +8,8 @@ import { APP_GUARD } from '@nestjs/core';
 
 
 @Module({
-  imports: [AuthModule, PrismaModule],
-  controllers: [StudentController, TeacherController, StudentTeacherController],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, PrismaModule],
+  controllers: [],
   providers: [
     {
       provide: APP_GUARD,
