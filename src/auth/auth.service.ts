@@ -4,8 +4,8 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { ConfigService } from '@nestjs/config';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt'
-import { Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload, Tokens } from './types';
 
 @Injectable()
 export class AuthService {
@@ -93,32 +93,28 @@ export class AuthService {
     hashData(data: string) {
         return bcrypt.hash(data, 10);
     }
-    async getTokens(userId: number, email: string) {
+
+    async getTokens(userId: number, email: string): Promise<Tokens> {
+        const jwtPayload: JwtPayload = {
+            sub: userId,
+            email: email,
+        };
+
         const [at, rt] = await Promise.all([
-
-            this.jwtService.signAsync({
-                sub: userId,
-                email
-            }, {
-                secret: 'at-secret',
-                expiresIn: 60 * 15,
-            },
-            ),
-
-            this.jwtService.signAsync({
-                sub: userId,
-                email
-            }, {
-                secret: 'rt-secret',
-                expiresIn: 60 * 60 * 24 * 7,
-            },
-            ),
+            this.jwtService.signAsync(jwtPayload, {
+                secret: this.config.get<string>('AT_SECRET'),
+                expiresIn: '15m',
+            }),
+            this.jwtService.signAsync(jwtPayload, {
+                secret: this.config.get<string>('RT_SECRET'),
+                expiresIn: '7d',
+            }),
         ]);
+
         return {
             access_token: at,
-            refresh_token: rt
-        }
+            refresh_token: rt,
+        };
     }
-
 
 }
