@@ -10,16 +10,16 @@ export class AuthController {
     constructor(private authService: AuthService) { }
 
     @Public()
-    @Post('local/signup')
+    @Post('auth/signup')
     @HttpCode(HttpStatus.CREATED)
-    signuplocal(@Body() dto: AuthDto): Promise<Tokens> {
-        return this.authService.signupLocal(dto)
+    signup(@Body() dto: AuthDto): Promise<Tokens> {
+        return this.authService.signup(dto)
     }
     @Public()
-    @Post('local/sigin')
+    @Post('auth/login')
     @HttpCode(HttpStatus.OK)
-    signinLocal(@Body() dto: AuthDto): Promise<Tokens> {
-        return this.authService.signinLocal(dto)
+    signin(@Body() dto: AuthDto): Promise<Tokens> {
+        return this.authService.signin(dto)
     }
 
     @UseGuards(AtGuard)

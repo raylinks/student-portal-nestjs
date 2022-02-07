@@ -11,7 +11,7 @@ import { JwtPayload, Tokens } from './types';
 export class AuthService {
     constructor(private prisma: PrismaService, private jwtService: JwtService, private config: ConfigService,) { }
 
-    async signupLocal(dto: AuthDto): Promise<Tokens> {
+    async signup(dto: AuthDto): Promise<Tokens> {
         const hash = await this.hashData(dto.password);
         const newUser = await this.prisma.user.create({
             data: {
@@ -32,7 +32,7 @@ export class AuthService {
         return tokens;
     }
 
-    async signinLocal(dto: AuthDto): Promise<Tokens> {
+    async signin(dto: AuthDto): Promise<Tokens> {
         const user = await this.prisma.user.findUnique({
             where: {
                 email: dto.email

@@ -35,7 +35,7 @@ describe('Auth Flow', () => {
         });
 
         it('should signup', async () => {
-            const tokens = await authService.signupLocal({
+            const tokens = await authService.signup({
                 email: user.email,
                 password: user.password,
             });
@@ -47,7 +47,7 @@ describe('Auth Flow', () => {
         it('should throw on duplicate user signup', async () => {
             let tokens: Tokens | undefined;
             try {
-                tokens = await authService.signupLocal({
+                tokens = await authService.signup({
                     email: user.email,
                     password: user.password,
                 });
@@ -66,7 +66,7 @@ describe('Auth Flow', () => {
         it('should throw if no existing user', async () => {
             let tokens: Tokens | undefined;
             try {
-                tokens = await authService.signinLocal({
+                tokens = await authService.signin({
                     email: user.email,
                     password: user.password,
                 });
@@ -78,12 +78,12 @@ describe('Auth Flow', () => {
         });
 
         it('should login', async () => {
-            await authService.signupLocal({
+            await authService.signup({
                 email: user.email,
                 password: user.password,
             });
 
-            const tokens = await authService.signinLocal({
+            const tokens = await authService.signin({
                 email: user.email,
                 password: user.password,
             });
@@ -95,7 +95,7 @@ describe('Auth Flow', () => {
         it('should throw if password incorrect', async () => {
             let tokens: Tokens | undefined;
             try {
-                tokens = await authService.signinLocal({
+                tokens = await authService.signin({
                     email: user.email,
                     password: user.password + 'a',
                 });
@@ -118,7 +118,7 @@ describe('Auth Flow', () => {
         });
 
         it('should logout', async () => {
-            await authService.signupLocal({
+            await authService.signup({
                 email: user.email,
                 password: user.password,
             });
@@ -163,7 +163,7 @@ describe('Auth Flow', () => {
 
         it('should throw if user logged out', async () => {
             // signup and save refresh token
-            const _tokens = await authService.signupLocal({
+            const _tokens = await authService.signup({
                 email: user.email,
                 password: user.password,
             });
@@ -192,7 +192,7 @@ describe('Auth Flow', () => {
         it('should throw if refresh token incorrect', async () => {
             await prisma.cleanDatabase();
 
-            const _tokens = await authService.signupLocal({
+            const _tokens = await authService.signup({
                 email: user.email,
                 password: user.password,
             });
@@ -218,7 +218,7 @@ describe('Auth Flow', () => {
         it('should refresh tokens', async () => {
             await prisma.cleanDatabase();
             // log in the user again and save rt + at
-            const _tokens = await authService.signupLocal({
+            const _tokens = await authService.signup({
                 email: user.email,
                 password: user.password,
             });
